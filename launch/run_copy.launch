@@ -7,7 +7,7 @@
     <arg name="gps_time" default="true" doc="Use pcap gps timestamp"/>
     <arg name="debug" default="false" doc="Debug print-outs"/>
 
-<!--
+<!-- 
     <group>
         <include file="$(find velodyne_pointcloud)/launch/VLP-32C_points.launch">
             <arg name="gps_time" value="$(arg gps_time)"/>
@@ -19,8 +19,8 @@
     
 
 
-    <node pkg="ncom_decoder" name="ncom_decoder_node" type="ncom_decoder_node" args="_ncom:=$(arg ncom) _debug:=$(arg debug)" output="screen"/>
--->
+    <node pkg="ncom_decoder" name="ncom_decoder_node" type="ncom_decoder_node" args="_ncom:=$(arg ncom) _debug:=$(arg debug)" output="screen"/> -->
+
     <!-- Parameters -->
     <rosparam file="$(find lio_sam)/config/params_copy.yaml" command="load" />
 

@@ -4,7 +4,7 @@ lio_sam:
   imuTopic: "/gpsimu_driver/imu_data"         # IMU data
 
   odomTopic: "odometry/imu"                   # IMU pre-preintegration odometry, same frequency as IMU
-  gpsTopic: "odometry/gps"                   # GPS odometry topic from navsat, see module_navsat.launch file
+  gpsTopic: "odometry/gps"                    # GPS odometry topic from navsat, see module_navsat.launch file
 
   # Frames
   lidarFrame: "velodyne"
@@ -37,26 +37,28 @@ lio_sam:
   imuGyrBiasN: 3.5640318696367613e-05
   imuGravity: 9.81
   #imuGravity: 0.0
-  imuRPYWeight: 0.01
+  imuRPYWeight: 0.5
 
   # Extrinsics (lidar -> IMU)
 
-  extrinsicTrans: [-2.151 -0.224 -1.073]
-  #extrinsicTrans: [0 0 0]
+  #extrinsicTrans: [-2.151 -0.224 -1.073]
+  extrinsicTrans: [-2.145 -0.216 -1.074]
   
-  #extrinsicRot: [0.966, 0, -0.257,
-  #               0, 1, 0,
-  #               0.257, 0, 0.966]
-
-  extrinsicRot: [1, 0, 0,
-                 0, 1, 0,
-                 0, 0, 1]
-  extrinsicRPY: [1, 0, 0,
-                0, 1, 0,
-                0, 0, 1]
-  #extrinsicRPY: [0.966, 0, -0.257,
-  #               0, 1, 0,
-  #               0.257, 0, 0.966]
+  
+  # extrinsicRot: [0.998579, -0.0520497, 0.0114135,
+  #               0.0521713,  0.998582, -0.0106224,
+  #               -0.0108444, 0.0112027, 0.999878]
+  # extrinsicRPY: [0.998579, -0.0520497, 0.0114135,
+  #               0.0521713,  0.998582, -0.0106224,
+  #               -0.0108444, 0.0112027, 0.999878]
+  
+  extrinsicRot: [0.989138, -0.146554, 0.011313,
+                -0.146641,  0.989163, -0.0072832,
+                0.010123, 0.00886305, 0.999909]
+  extrinsicRPY: [0.989138, -0.146554, 0.011313,
+                -0.146641,  0.989163, -0.0072832,
+                0.010123, 0.00886305, 0.999909]
+             
 
 
   # LOAM feature threshold
@@ -66,9 +68,9 @@ lio_sam:
   surfFeatureMinValidNum: 100
 
   # voxel filter paprams
-  odometrySurfLeafSize: 0.4                     # default: 0.4 - outdoor, 0.2 - indoor
-  mappingCornerLeafSize: 0.2                    # default: 0.2 - outdoor, 0.1 - indoor
-  mappingSurfLeafSize: 0.4                      # default: 0.4 - outdoor, 0.2 - indoor
+  odometrySurfLeafSize: 0.3                     # default: 0.4 - outdoor, 0.2 - indoor
+  mappingCornerLeafSize: 0.15                    # default: 0.2 - outdoor, 0.1 - indoor
+  mappingSurfLeafSize: 0.3                      # default: 0.4 - outdoor, 0.2 - indoor
 
   # robot motion constraint (in case you are using a 2D robot)
   z_tollerance: 1000                            # meters
