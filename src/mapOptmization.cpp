@@ -821,6 +821,7 @@ public:
 
         static Eigen::Affine3f lastImuTransformation;
         // initialization
+        // TODO: Check if this is needed or not
         bool useGpsPos = true;
         std::scoped_lock tmpmtx(mtxGpsQueue);
 
@@ -856,6 +857,7 @@ public:
         static Eigen::Affine3f lastImuPreTransformation;
         if (cloudInfo.odomAvailable == true)
         {
+            // TODO: Check if this is needed or not
             Eigen::Affine3f transBack;
             if (useGpsPos==false){
                 transBack = pcl::getTransformation(cloudInfo.initialGuessX,
