@@ -857,8 +857,13 @@ public:
         static Eigen::Affine3f lastImuPreTransformation;
         if (cloudInfo.odomAvailable == true)
         {
+<<<<<<< Updated upstream
             // TODO: Check if this is needed or not
             Eigen::Affine3f transBack;
+=======
+            //ToDO the error here should not propogate in the same way anymore
+             Eigen::Affine3f transBack;
+>>>>>>> Stashed changes
             if (useGpsPos==false){
                 transBack = pcl::getTransformation(cloudInfo.initialGuessX,
                                                    cloudInfo.initialGuessY,
@@ -893,8 +898,12 @@ public:
                                                               transformTobeMapped[0], transformTobeMapped[1], transformTobeMapped[2]);
 
                 lastImuPreTransformation = transBack;
+                 tf::Quaternion orientation;
+                tf::quaternionMsgToTF(closesttimestamp->pose.pose.orientation, orientation);
 
-                lastImuTransformation = pcl::getTransformation(0, 0, 0, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit); // save imu before return;
+                double roll, pitch, yaw;
+                tf::Matrix3x3(orientation).getRPY(roll, pitch, yaw);
+                lastImuTransformation = pcl::getTransformation(0, 0, 0, roll, pitch, yaw); // save imu before return;
                 return;
             }
         }

@@ -39,6 +39,7 @@
 #include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>
 #include <tf_conversions/tf_eigen.h>
+#include <eigen_conversions/eigen_msg.h>
 
  
 #include <vector>
@@ -318,6 +319,75 @@ public:
 
         return imu_out;
     }
+// TODO refactor
+    nav_msgs::Odometry odomConverter(const nav_msgs::Odometry& odomMsgIn) {
+        nav_msgs::Odometry odomMsgOut = odomMsgIn;
+        // twist the covariancematrix C'=R*C*R^t C=>R^6x6 and R=>R^6x6
+        
+        Eigen::Vector3d pose(odomMsgIn.pose.pose.position.x, odomMsgIn.pose.pose.position.y, odomMsgIn.pose.pose.position.z);
+        pose = pose-extTrans;
+        pose = extRot * pose;
+        odomMsgOut.pose.pose.position.x = pose.x();
+        odomMsgOut.pose.pose.position.y = pose.y();
+        odomMsgOut.pose.pose.position.z = pose.z();
+        
+        Eigen::Quaterniond orientation(odomMsgIn.pose.pose.orientation.w,odomMsgIn.pose.pose.orientation.x,odomMsgIn.pose.pose.orientation.y,odomMsgIn.pose.pose.orientation.z);
+        Eigen::Quaterniond orientationFinal = orientation * extQRPY;
+        odomMsgOut.pose.pose.orientation.x = orientationFinal.x();
+        odomMsgOut.pose.pose.orientation.y = orientationFinal.y();
+        odomMsgOut.pose.pose.orientation.z = orientationFinal.z();
+        odomMsgOut.pose.pose.orientation.w = orientationFinal.w();
+
+        Eigen::MatrixXd covPoseOri(6,6);
+        covPoseOri = Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(odomMsgIn.pose.covariance.data(), 6, 6);
+        std::cout << covPoseOri<< std::endl;
+        Eigen::MatrixXd RotPoseOri(6,6);
+        Eigen::Matrix3d zeros = Eigen::Matrix3d::Constant(0);
+        RotPoseOri.block<3,3>(1,1) = extRot;
+        RotPoseOri.block<3,3>(4,1) = zeros;
+        RotPoseOri.block<3,3>(1,4) = zeros;
+        RotPoseOri.block<3,3>(4,4) = extRot;
+        std::cout << RotPoseOri<< std::endl;
+        Eigen::MatrixXd finalCovPoseOri(6,6);
+        finalCovPoseOri = RotPoseOri * covPoseOri * RotPoseOri.transpose();
+
+        for (int i= 0; i<finalCovPoseOri.size();i++){
+            odomMsgOut.pose.covariance[i]=finalCovPoseOri.data()[i];
+        }
+        
+        Eigen::Vector3d linear(odomMsgIn.twist.twist.linear.x, odomMsgIn.twist.twist.linear.y, odomMsgIn.twist.twist.linear.z);
+        linear = extRot * linear;
+        odomMsgOut.twist.twist.linear.x = linear.x();
+        odomMsgOut.twist.twist.linear.y = linear.y();
+        odomMsgOut.twist.twist.linear.z = linear.z();
+
+        Eigen::Vector3d angular(odomMsgIn.twist.twist.angular.x, odomMsgIn.twist.twist.angular.y, odomMsgIn.twist.twist.angular.z);
+        angular = extRot * angular;
+        odomMsgOut.twist.twist.angular.x = angular.x();
+        odomMsgOut.twist.twist.angular.y = angular.y();
+        odomMsgOut.twist.twist.angular.z = angular.z();
+        
+
+        Eigen::MatrixXd covTwistOri(6,6);
+        covTwistOri = Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(odomMsgIn.pose.covariance.data(), 6, 6);
+        std::cout << covTwistOri<< std::endl;
+        Eigen::MatrixXd RotTwistOri(6,6);
+        RotTwistOri.block<3,3>(1,1) = extRot;
+        RotTwistOri.block<3,3>(4,1) = zeros;
+        RotTwistOri.block<3,3>(1,4) = zeros;
+        RotTwistOri.block<3,3>(4,4) = extRot;
+        std::cout << RotPoseOri<< std::endl;
+        Eigen::MatrixXd finalCovTwistOri(6,6);
+        finalCovTwistOri = RotTwistOri * covTwistOri * RotTwistOri.transpose();
+
+        for (int i= 0; i<finalCovTwistOri.size();i++){
+            odomMsgOut.twist.covariance[i]=finalCovTwistOri.data()[i];
+        }
+
+
+    }
+
+  
 };
 
 template<typename T>
@@ -346,6 +416,13 @@ void imuAngular2rosAngular(sensor_msgs::Imu *thisImuMsg, T *angular_x, T *angula
     *angular_y = thisImuMsg->angular_velocity.y;
     *angular_z = thisImuMsg->angular_velocity.z;
 }
+template<typename T>
+void odomAngular2rosAngular(nav_msgs::Odometry *thisOdomMsg, T *angular_x, T *angular_y, T *angular_z)
+{
+    *angular_x = thisOdomMsg->twist.twist.angular.x;
+    *angular_y = thisOdomMsg->twist.twist.angular.y;
+    *angular_z = thisOdomMsg->twist.twist.angular.z;
+}
 
 
 template<typename T>
@@ -371,9 +448,21 @@ void imuRPY2rosRPY(sensor_msgs::Imu *thisImuMsg, T *rosRoll, T *rosPitch, T *ros
 }
 
 template<class T>
-float pointDistance(T p)
-{
+float pointDistance(T p){
     return sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
+}
+
+template<typename T>
+void odomRPY2rosRPY(nav_msgs::Odometry *thisOdomMsg, T *rosRoll, T *rosPitch, T *rosYaw)
+{
+    double imuRoll, imuPitch, imuYaw;
+    tf::Quaternion orientation;
+    tf::quaternionMsgToTF(thisOdomMsg->pose.pose.orientation, orientation);
+    tf::Matrix3x3(orientation).getRPY(imuRoll, imuPitch, imuYaw);
+
+    *rosRoll = imuRoll;
+    *rosPitch = imuPitch;
+    *rosYaw = imuYaw;
 }
 
 template<class T>

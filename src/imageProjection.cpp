@@ -108,7 +108,7 @@ public:
     {
         subImu        = nh.subscribe<sensor_msgs::Imu>(imuTopic, 2000, &ImageProjection::imuHandler, this, ros::TransportHints().tcpNoDelay());
         subOdom       = nh.subscribe<nav_msgs::Odometry>(odomTopic+"_incremental", 2000, &ImageProjection::odometryHandler, this, ros::TransportHints().tcpNoDelay());
-        subLaserCloud = nh.subscribe<sensor_msgs::PointCloud2>(pointCloudTopic, 5, &ImageProjection::cloudHandler, this, ros::TransportHints().tcpNoDelay());
+        subLaserCloud = nh.subscribe<sensor_msgs::PointCloud2>(pointCloudTopic, 5, &ImageProjection::cloudHandler, this, ros::TransportHints().tcpNoDelay()); 
 
         pubExtractedCloud = nh.advertise<sensor_msgs::PointCloud2> ("lio_sam/deskew/cloud_deskewed", 1);
         pubLaserCloudInfo = nh.advertise<lio_sam::cloud_info> ("lio_sam/deskew/cloud_info", 1);
@@ -305,11 +305,11 @@ public:
         std::lock_guard<std::mutex> lock2(odoLock);
 
         // make sure IMU data available for the scan
-        if (imuQueue.empty() || imuQueue.front().header.stamp.toSec() > timeScanCur || imuQueue.back().header.stamp.toSec() < timeScanEnd)
-        {
-            ROS_DEBUG("Waiting for IMU data ...");
-            return false;
-        }
+        // if (imuQueue.empty() || imuQueue.front().header.stamp.toSec() > timeScanCur || imuQueue.back().header.stamp.toSec() < timeScanEnd)
+        // {
+            // ROS_DEBUG("Waiting for IMU data ...");
+            // return false;
+        // }
 
         imuDeskewInfo();
 
@@ -321,7 +321,7 @@ public:
     void imuDeskewInfo()
     {
         cloudInfo.imuAvailable = false;
-
+        //TODO change to odom
         while (!imuQueue.empty())
         {
             if (imuQueue.front().header.stamp.toSec() < timeScanCur - 0.01)
@@ -329,43 +329,43 @@ public:
             else
                 break;
         }
-
-        if (imuQueue.empty())
-            return;
+        
+        // if (imuQueue.empty())
+            // return;
 
         imuPointerCur = 0;
 
-        for (int i = 0; i < (int)imuQueue.size(); ++i)
+        for (int i = 0; i < (int)odomQueue.size(); ++i)
         {
-            sensor_msgs::Imu thisImuMsg = imuQueue[i];
-            double currentImuTime = thisImuMsg.header.stamp.toSec();
+            nav_msgs::Odometry thisOdomMsg = odomQueue[i];
+            double currentOdomTime = thisOdomMsg.header.stamp.toSec();
 
             // get roll, pitch, and yaw estimation for this scan
-            if (currentImuTime <= timeScanCur)
-                imuRPY2rosRPY(&thisImuMsg, &cloudInfo.imuRollInit, &cloudInfo.imuPitchInit, &cloudInfo.imuYawInit);
+            if (currentOdomTime <= timeScanCur)
+                odomRPY2rosRPY(&thisOdomMsg, &cloudInfo.imuRollInit, &cloudInfo.imuPitchInit, &cloudInfo.imuYawInit);
 
-            if (currentImuTime > timeScanEnd + 0.01)
+            if (currentOdomTime > timeScanEnd + 0.01)
                 break;
 
             if (imuPointerCur == 0){
                 imuRotX[0] = 0;
                 imuRotY[0] = 0;
                 imuRotZ[0] = 0;
-                imuTime[0] = currentImuTime;
+                imuTime[0] = currentOdomTime;
                 ++imuPointerCur;
                 continue;
             }
 
             // get angular velocity
             double angular_x, angular_y, angular_z;
-            imuAngular2rosAngular(&thisImuMsg, &angular_x, &angular_y, &angular_z);
+            odomAngular2rosAngular(&thisOdomMsg, &angular_x, &angular_y, &angular_z);
 
             // integrate rotation
-            double timeDiff = currentImuTime - imuTime[imuPointerCur-1];
-            imuRotX[imuPointerCur] = imuRotX[imuPointerCur-1] + angular_x * timeDiff;
-            imuRotY[imuPointerCur] = imuRotY[imuPointerCur-1] + angular_y * timeDiff;
-            imuRotZ[imuPointerCur] = imuRotZ[imuPointerCur-1] + angular_z * timeDiff;
-            imuTime[imuPointerCur] = currentImuTime;
+            double timeDiff = currentOdomTime - imuTime[imuPointerCur-1];
+            imuRotX[imuPointerCur] = imuRotX[imuPointerCur-1]; + angular_x * timeDiff;
+            imuRotY[imuPointerCur] = imuRotY[imuPointerCur-1]; + angular_y * timeDiff;
+            imuRotZ[imuPointerCur] = imuRotZ[imuPointerCur-1]; + angular_z * timeDiff;
+            imuTime[imuPointerCur] = currentOdomTime;
             ++imuPointerCur;
         }
 
