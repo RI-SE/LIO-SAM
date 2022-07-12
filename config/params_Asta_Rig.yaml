@@ -6,7 +6,7 @@ lio_sam:
   odomTopic: "odometry/imu"                   # IMU pre-preintegration odometry, same frequency as IMU
   gpsTopic: "odometry/navsat"                    # GPS odometry topic from navsat, see module_navsat.launch file
 
-  useDownSampling: false                      # Set to false to disable all downsampling of scans
+  useDownSampling: true                      # Set to false to disable all downsampling of scans
 
   # Frames
   lidarFrame: "velodyne"
@@ -19,7 +19,7 @@ lio_sam:
   useGpsElevation: true                       # if GPS elevation is bad, set to "false"
   gpsDistThreshold: 0.25                       # Distance threshold [m] (between two gps measurements) deciding if the new GPS position should be included in the gtsam graph
   gpsCovThreshold: 1.0                        # If GPS noise is greater than this threshold, discard
-  poseCovThreshold: 0.01                       # If Pose is further away from GPS than this threshold, correct
+  poseCovThreshold: 1.0                       # If Pose is further away from GPS than this threshold, correct
   
   # Export settings
   savePCD: false                              # https://github.com/TixiaoShan/LIO-SAM/issues/3
@@ -31,10 +31,10 @@ lio_sam:
   Horizon_SCAN: 1800                          # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048)
   downsampleRate: 1                           # default: 1. Downsample your data if too many points. i.e., 16 = 64 / 4, 16 = 16 / 1
   lidarMinRange: 2.2                          # default: 1.0, minimum lidar range to be used
-  lidarMaxRange: 50.0                         # default: 1000.0, maximum lidar range to be used
+  lidarMaxRange: 40.0                         # default: 1000.0, maximum lidar range to be used
 
   # IMU Settings
-  imuFrequency: 200
+  imuFrequency: 100
   imuAccNoise: 3.9939570888238808e-03
   imuGyrNoise: 1.5636343949698187e-03
   imuAccBiasN: 6.4356659353532566e-05
@@ -48,29 +48,29 @@ lio_sam:
   extrinsicTrans: [0.0 0.0 -0.246]
 
 
-  # extrinsicRot: [  0.9945219,  0.1045285,  0.0000000,
-  #                 -0.1045285,  0.9945219,  0.0000000,
-  #                 0.0000000,  0.0000000,  1.0000000 ]
-  # extrinsicRPY: [  0.9945219,  0.1045285,  0.0000000,
-  #                 -0.1045285,  0.9945219,  0.0000000,
-  #                 0.0000000,  0.0000000,  1.0000000 ]
+  extrinsicRot: [  0.9945219,  0.1045285,  0.0000000,
+                  -0.1045285,  0.9945219,  0.0000000,
+                  0.0000000,  0.0000000,  1.0000000 ]
+  extrinsicRPY: [  0.9945219,  0.1045285,  0.0000000,
+                  -0.1045285,  0.9945219,  0.0000000,
+                  0.0000000,  0.0000000,  1.0000000 ]
 
 
-  extrinsicRot: [1.0, 0.0, 0.0,
-                 0.0, 1.0, 0.0,
-                 0.0, 0.0, 1.0]
-  extrinsicRPY: [1.0, 0.0, 0.0,
-                 0.0, 1.0, 0.0,
-                 0.0, 0.0, 1.0]
+  # extrinsicRot: [1.0, 0.0, 0.0,
+  #                0.0, 1.0, 0.0,
+  #                0.0, 0.0, 1.0]
+  # extrinsicRPY: [1.0, 0.0, 0.0,
+  #                0.0, 1.0, 0.0,
+  #                0.0, 0.0, 1.0]
                 
 
 
 
   # LOAM feature threshold
-  edgeThreshold: 1.0
-  surfThreshold: 0.1
-  edgeFeatureMinValidNum: 25
-  surfFeatureMinValidNum: 100
+  edgeThreshold: 1.5
+  surfThreshold: 0.05
+  edgeFeatureMinValidNum: 100
+  surfFeatureMinValidNum: 300
 
   # voxel filter paprams
   odometrySurfLeafSize: 0.2                     # default: 0.4 - outdoor, 0.2 - indoor
@@ -95,7 +95,7 @@ lio_sam:
   loopClosureEnableFlag: true
   loopClosureFrequency: 2.0                     # Hz, regulate loop closure constraint add frequency
   surroundingKeyframeSize: 50                   # submap size (when loop closure enabled)
-  historyKeyframeSearchRadius: 50.0             # meters, key frame that is within n meters from current pose will be considerd for loop closure
+  historyKeyframeSearchRadius: 30.0             # meters, key frame that is within n meters from current pose will be considerd for loop closure
   historyKeyframeSearchTimeDiff: 15.0           # seconds, key frame that is n seconds older will be considered for loop closure
   historyKeyframeSearchNum: 50                  # number of hostory key frames will be fused into a submap for loop closure
   historyKeyframeFitnessScore: 0.05              # icp threshold, the smaller the better alignment
