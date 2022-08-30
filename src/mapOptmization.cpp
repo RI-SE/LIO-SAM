@@ -2,6 +2,8 @@
 #include "lio_sam/cloud_info.h"
 #include "lio_sam/save_map.h"
 
+#include <pcl/io/ply_io.h>
+
 #include <gtsam/geometry/Rot3.h>
 #include <gtsam/geometry/Pose3.h>
 #include <gtsam/slam/PriorFactor.h>
@@ -412,7 +414,7 @@ public:
 
         // Save UTM coordinate of origin
         std::ofstream ofs(saveMapDirectory + "/GlobalMap.pcd" + ".utm", std::ofstream::out);
-        std::cout << "Saving UTM to " << saveMapDirectory + "/GlobalMap.pcd" + ".utm" << std::endl;
+        std::cout << "\nSaving UTM to " << saveMapDirectory + "/GlobalMap.pcd" + ".utm" << std::endl;
         ofs << boost::format("%.6f %.6f %.6f") % utmToMapTransform.getOrigin().x() % utmToMapTransform.getOrigin().y() % utmToMapTransform.getOrigin().z() << std::endl;
         ofs.close();   
         
@@ -429,7 +431,11 @@ public:
         }
 
         // Saved cloud is now rotated to match north/east
+        std::cout << "saving PCD file" << std::endl;
         int ret = pcl::io::savePCDFileBinary(saveMapDirectory + "/GlobalMap.pcd", *globalMapCloudAligned);
+        // pcl::io::savePCDFileASCII(saveMapDirectory + "/GlobalMap_ascii.pcd", *globalMapCloudAligned);
+        std::cout << "saving PLY file" << std::endl;
+        pcl::io::savePLYFile(saveMapDirectory + "/GlobalMap.ply", *globalMapCloudAligned);
         res.success = ret == 0;
 
         downSizeFilterCorner.setLeafSize(mappingCornerLeafSize, mappingCornerLeafSize, mappingCornerLeafSize);
@@ -619,6 +625,7 @@ public:
         float x, y, z, roll, pitch, yaw;
         Eigen::Affine3f correctionLidarFrame;
         correctionLidarFrame = icp.getFinalTransformation();
+        std::cout << "icp.getFinalTransformation is now: " << correctionLidarFrame.matrix() << std::endl;
         // transform from world origin to wrong pose
         Eigen::Affine3f tWrong = pclPointToAffine3f(copy_cloudKeyPoses6D->points[loopKeyCur]);
         // transform from world origin to corrected pose
