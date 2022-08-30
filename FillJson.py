@@ -55,6 +55,7 @@ out_srs = "+proj=tmerc +lat_0=0 +lon_0=15 +ellps=GRS80 +x_0={} +y_0={} +units=m 
 
 
 cloudFile = utmFile.replace(".utm", "")
+cloudFile = cloudFile.replace(".pcd", ".ply")
 
 jsonList = []
 jsonList.append({"filename": cloudFile})
@@ -63,7 +64,7 @@ jsonList.append({"type":"filters.reprojection",
                 "out_srs":out_srs})
 jsonList.append({"type":"writers.las",
                 "a_srs":"EPSG:3006", # 32632 for non-track use
-                "filename":cloudFile.replace(".pcd", ".las")})
+                "filename":cloudFile.replace(".ply", ".las")})
 
 jsonFile = os.path.dirname(pcdFile) + "/ConvertLasToPcdWithGeoRef.json"
 print("saving pipeline file to ", jsonFile)
