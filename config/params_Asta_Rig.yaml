@@ -1,10 +1,10 @@
 lio_sam:
   # Topics
-  pointCloudTopic: "/CombinedCloud"          # Point cloud data
-  imuTopic: "/gpsimu_driver/imu_data"         # IMU data
+  pointCloudTopic: "/velodyne_points"       # Point cloud data
+  imuTopic: "/ins/imu"                 # IMU data
 
-  odomTopic: "odometry/imu"                   # IMU pre-preintegration odometry, same frequency as IMU
-  gpsTopic: "odometry/navsat"                    # GPS odometry topic from navsat, see module_navsat.launch file
+  odomTopic: "/ins/odometry"           # IMU pre-preintegration odometry, same frequency as IMU
+  gpsTopic: "odometry/navsat"               # GPS odometry topic from navsat, see module_navsat.launch file
 
   useDownSampling: true                      # Set to false to disable all downsampling of scans
 
@@ -30,7 +30,7 @@ lio_sam:
   N_SCAN: 32                                  # number of lidar channel (i.e., 16, 32, 64, 128)
   Horizon_SCAN: 1800                          # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048)
   downsampleRate: 1                           # default: 1. Downsample your data if too many points. i.e., 16 = 64 / 4, 16 = 16 / 1
-  lidarMinRange: 2.2                          # default: 1.0, minimum lidar range to be used
+  lidarMinRange: 2.5                          # default: 1.0, minimum lidar range to be used
   lidarMaxRange: 40.0                         # default: 1000.0, maximum lidar range to be used
 
   # IMU Settings
@@ -165,9 +165,9 @@ ekf_gps:
                                0,    0,    0,    0,    0,    0,    0.25,  0,     0,     0,    0,    0,    0,    0,      0,
                                0,    0,    0,    0,    0,    0,    0,     0.25,  0,     0,    0,    0,    0,    0,      0,
                                0,    0,    0,    0,    0,    0,    0,     0,     0.04,  0,    0,    0,    0,    0,      0,
-                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0.01, 0,    0,    0,    0,      0,
-                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0.01, 0,    0,    0,      0,
-                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0.01, 0,    0,      0,
+                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0.1, 0,    0,    0,    0,      0,
+                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0.1, 0,    0,    0,      0,
+                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0.2, 0,    0,      0,
                                0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,    0.01, 0,      0,
                                0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,    0,    0.01,   0,
                                0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,    0,    0,      0.015]
