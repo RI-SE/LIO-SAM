@@ -107,7 +107,7 @@ public:
     deskewFlag(0)
     {
         subImu        = nh.subscribe<sensor_msgs::Imu>(imuTopic, 2000, &ImageProjection::imuHandler, this, ros::TransportHints().tcpNoDelay());
-        subOdom       = nh.subscribe<nav_msgs::Odometry>(odomTopic+"_incremental", 2000, &ImageProjection::odometryHandler, this, ros::TransportHints().tcpNoDelay());
+        subOdom       = nh.subscribe<nav_msgs::Odometry>(odomTopic, 2000, &ImageProjection::odometryHandler, this, ros::TransportHints().tcpNoDelay());
         subLaserCloud = nh.subscribe<sensor_msgs::PointCloud2>(pointCloudTopic, 5, &ImageProjection::cloudHandler, this, ros::TransportHints().tcpNoDelay());
 
         pubExtractedCloud = nh.advertise<sensor_msgs::PointCloud2> ("lio_sam/deskew/cloud_deskewed", 1);
@@ -194,19 +194,29 @@ public:
 
     void cloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloudMsg)
     {
-        if (!cachePointCloud(laserCloudMsg))
-            return;
 
-        if (!deskewInfo())
+        if (!cachePointCloud(laserCloudMsg)) {
             return;
+        }
+        std::cout << " passed cachePointCloud(laserCloudMsg)" << std::endl;
+        if (!deskewInfo()) {
+            std::cout << "!deskewInfo()" << std::endl;
+
+            return;
+        }
+        std::cout << "passed deskewInfo()" << std::endl;
 
         projectPointCloud();
+        std::cout << "passed projectPointCloud()" << std::endl;
 
         cloudExtraction();
+        std::cout << "passed cloudExtraction()" << std::endl;
 
         publishClouds();
-
+        std::cout << "passed publishClouds()" << std::endl;
+        
         resetParameters();
+        std::cout << "passed resetParameters()" << std::endl;        
     }
 
     bool cachePointCloud(const sensor_msgs::PointCloud2ConstPtr& laserCloudMsg)

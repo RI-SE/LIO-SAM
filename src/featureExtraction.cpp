@@ -64,7 +64,9 @@ public:
     }
 
     void laserCloudInfoHandler(const lio_sam::cloud_infoConstPtr& msgIn)
-    {
+    {   
+        std::cout << "Got Cloud Info to featureextraction" << std::endl;
+
         cloudInfo = *msgIn; // new cloud info
         cloudHeader = msgIn->header; // new cloud header
 
