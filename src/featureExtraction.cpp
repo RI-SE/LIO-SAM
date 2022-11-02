@@ -65,7 +65,7 @@ public:
 
     void laserCloudInfoHandler(const lio_sam::cloud_infoConstPtr& msgIn)
     {   
-        std::cout << "Got Cloud Info to featureextraction" << std::endl;
+        // std::cout << "Got Cloud Info to featureextraction" << std::endl;
 
         cloudInfo = *msgIn; // new cloud info
         cloudHeader = msgIn->header; // new cloud header
@@ -263,6 +263,7 @@ public:
         cloudInfo.cloud_surface = publishCloud(pubSurfacePoints, surfaceCloud, cloudHeader.stamp, lidarFrame);
         // publish to mapOptimization
         pubLaserCloudInfo.publish(cloudInfo);
+        // std::cout << "published feature cloud " << std::endl;
     }
 };
 

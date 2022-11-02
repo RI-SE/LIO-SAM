@@ -198,25 +198,25 @@ public:
         if (!cachePointCloud(laserCloudMsg)) {
             return;
         }
-        std::cout << " passed cachePointCloud(laserCloudMsg)" << std::endl;
+        // std::cout << " passed cachePointCloud(laserCloudMsg)" << std::endl;
         if (!deskewInfo()) {
             std::cout << "!deskewInfo()" << std::endl;
 
             return;
         }
-        std::cout << "passed deskewInfo()" << std::endl;
+        // std::cout << "passed deskewInfo()" << std::endl;
 
         projectPointCloud();
-        std::cout << "passed projectPointCloud()" << std::endl;
+        // std::cout << "passed projectPointCloud()" << std::endl;
 
         cloudExtraction();
-        std::cout << "passed cloudExtraction()" << std::endl;
+        // std::cout << "passed cloudExtraction()" << std::endl;
 
         publishClouds();
-        std::cout << "passed publishClouds()" << std::endl;
+        // std::cout << "passed publishClouds()" << std::endl;
         
         resetParameters();
-        std::cout << "passed resetParameters()" << std::endl;        
+        // std::cout << "passed resetParameters()" << std::endl;        
     }
 
     bool cachePointCloud(const sensor_msgs::PointCloud2ConstPtr& laserCloudMsg)
