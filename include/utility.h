@@ -337,12 +337,12 @@ public:
         odom_out.child_frame_id = "odom_imu";
 
         // rotate roll pitch yaw
-        Eigen::Quaterniond q_from(odom_in.pose.pose.orientation.w, odom_in.pose.pose.orientation.x, odom_in.pose.pose.orientation.y, odom_in.pose.pose.orientation.z);
-        Eigen::Quaterniond q_final = q_from * extQRPY;
-        odom_out.pose.pose.orientation.x = q_final.x();
-        odom_out.pose.pose.orientation.y = q_final.y();
-        odom_out.pose.pose.orientation.z = q_final.z();
-        odom_out.pose.pose.orientation.w = q_final.w();
+        // Eigen::Quaterniond q_from(odom_in.pose.pose.orientation.w, odom_in.pose.pose.orientation.x, odom_in.pose.pose.orientation.y, odom_in.pose.pose.orientation.z);
+        // Eigen::Quaterniond q_final = q_from * extQRPY;
+        // odom_out.pose.pose.orientation.x = q_final.x();
+        // odom_out.pose.pose.orientation.y = q_final.y();
+        // odom_out.pose.pose.orientation.z = q_final.z();
+        // odom_out.pose.pose.orientation.w = q_final.w();
 
         return odom_out;
     }
