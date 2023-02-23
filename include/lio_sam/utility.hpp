@@ -84,6 +84,7 @@ public:
     // GPS Settings
     bool useImuHeadingInitialization;
     bool useGpsElevation;
+    float gpsDistThreshold;
     float gpsCovThreshold;
     float poseCovThreshold;
 
@@ -176,6 +177,8 @@ public:
         get_parameter("useImuHeadingInitialization", useImuHeadingInitialization);
         declare_parameter("useGpsElevation", false);
         get_parameter("useGpsElevation", useGpsElevation);
+        declare_parameter("gpsDistThreshold", 5.0);
+        get_parameter("gpsDistThreshold", gpsDistThreshold);
         declare_parameter("gpsCovThreshold", 2.0);
         get_parameter("gpsCovThreshold", gpsCovThreshold);
         declare_parameter("poseCovThreshold", 25.0);
