@@ -42,7 +42,7 @@
     imuAccBiasN: 6.4356659353532566e-05
     imuGyrBiasN: 3.5640318696367613e-05
     imuGravity: 9.81
-    imuRPYWeight: 0.1
+    imuRPYWeight: 0.01
 
 
     # Extrinsics (lidar -> IMU)
@@ -75,9 +75,9 @@
     surfFeatureMinValidNum: 300
 
     # voxel filter paprams
-    odometrySurfLeafSize: 0.2                     # default: 0.4 - outdoor, 0.2 - indoor
-    mappingCornerLeafSize: 0.1                    # default: 0.2 - outdoor, 0.1 - indoor
-    mappingSurfLeafSize: 0.2                      # default: 0.4 - outdoor, 0.2 - indoor
+    odometrySurfLeafSize: 0.4                     # default: 0.4 - outdoor, 0.2 - indoor
+    mappingCornerLeafSize: 0.2                    # default: 0.2 - outdoor, 0.1 - indoor
+    mappingSurfLeafSize: 0.4                      # default: 0.4 - outdoor, 0.2 - indoor
 
     # robot motion constraint (in case you are using a 2D robot)
     z_tollerance: 1000.0                            # meters
@@ -95,12 +95,12 @@
 
     # Loop closure
     loopClosureEnableFlag: true
-    loopClosureFrequency: 2.0                     # Hz, regulate loop closure constraint add frequency
+    loopClosureFrequency: 1.0                     # Hz, regulate loop closure constraint add frequency
     surroundingKeyframeSize: 50                   # submap size (when loop closure enabled)
-    historyKeyframeSearchRadius: 30.0             # meters, key frame that is within n meters from current pose will be considerd for loop closure
-    historyKeyframeSearchTimeDiff: 15.0           # seconds, key frame that is n seconds older will be considered for loop closure
+    historyKeyframeSearchRadius: 15.0             # meters, key frame that is within n meters from current pose will be considerd for loop closure
+    historyKeyframeSearchTimeDiff: 30.0           # seconds, key frame that is n seconds older will be considered for loop closure
     historyKeyframeSearchNum: 50                  # number of hostory key frames will be fused into a submap for loop closure
-    historyKeyframeFitnessScore: 0.05              # icp threshold, the smaller the better alignment
+    historyKeyframeFitnessScore: 0.1              # icp threshold, the smaller the better alignment
 
     # Visualization
     globalMapVisualizationSearchRadius: 1000.0    # meters, global map visualization radius

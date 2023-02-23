@@ -233,8 +233,14 @@ public:
             }
 
             surfaceCloudScanDS->clear();
-            downSizeFilter.setInputCloud(surfaceCloudScan);
-            downSizeFilter.filter(*surfaceCloudScanDS);
+
+            if(useDownSampling) {
+                downSizeFilter.setInputCloud(surfaceCloudScan);
+                downSizeFilter.filter(*surfaceCloudScanDS);
+            }
+            else {
+                pcl::copyPointCloud(*surfaceCloudScan, *surfaceCloudScanDS);
+            }
 
             *surfaceCloud += *surfaceCloudScanDS;
         }

@@ -81,6 +81,8 @@ public:
     string odometryFrame;
     string mapFrame;
 
+    bool useDownSampling;
+
     // GPS Settings
     bool useImuHeadingInitialization;
     bool useGpsElevation;
@@ -155,6 +157,9 @@ public:
 
     ParamServer(std::string node_name, const rclcpp::NodeOptions & options) : Node(node_name, options)
     {
+        declare_parameter("useDownSampling", true);
+        get_parameter("useDownSampling", useDownSampling);
+
         declare_parameter("pointCloudTopic", "points");
         get_parameter("pointCloudTopic", pointCloudTopic);
         declare_parameter("imuTopic", "imu/data");
