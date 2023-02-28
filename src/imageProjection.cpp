@@ -190,9 +190,9 @@ public:
         //       ", y: " << thisImu.angular_velocity.y << 
         //       ", z: " << thisImu.angular_velocity.z << endl;
         // double imuRoll, imuPitch, imuYaw;
-        // tf::Quaternion orientation;
-        // tf::quaternionMsgToTF(thisImu.orientation, orientation);
-        // tf::Matrix3x3(orientation).getRPY(imuRoll, imuPitch, imuYaw);
+        // tf2::Quaternion orientation;
+        // tf2::convert(thisImu.orientation, orientation);
+        // tf2::Matrix3x3(orientation).getRPY(imuRoll, imuPitch, imuYaw);
         // cout << "IMU roll pitch yaw: " << endl;
         // cout << "roll: " << imuRoll << ", pitch: " << imuPitch << ", yaw: " << imuYaw << endl << endl;
     }
@@ -264,11 +264,11 @@ public:
         timeScanEnd = timeScanCur + laserCloudIn->points.back().time;
 
         // check dense flag
-        if (laserCloudIn->is_dense == false)
-        {
-            RCLCPP_ERROR(get_logger(), "Point cloud is not in dense format, please remove NaN points first!");
-            rclcpp::shutdown();
-        }
+        // if (laserCloudIn->is_dense == false)
+        // {
+        //     RCLCPP_ERROR(get_logger(), "Point cloud is not in dense format, please remove NaN points first!");
+        //     rclcpp::shutdown();
+        // }
 
         // check ring channel
         static int ringFlag = 0;

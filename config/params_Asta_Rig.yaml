@@ -2,11 +2,12 @@
   ros__parameters:
 
     # Topics
-    pointCloudTopic: "/CombinedCloud"          # Point cloud data
+    pointCloudTopic: "/velodyne_points"          # Point cloud data
     imuTopic: "/ins/imu"         # IMU data
 
     odomTopic: "odometry/imu"                   # IMU pre-preintegration odometry, same frequency as IMU
-    gpsTopic: "odometry/navsat"                    # GPS odometry topic from navsat, see module_navsat.launch file
+    # gpsTopic: "ins/odometry"                    # GPS odometry topic from navsat, see module_navsat.launch file
+    gpsTopic: "odometry/gpsz" 
 
     useDownSampling: true                      # Set to false to disable all downsampling of scans
 
@@ -17,8 +18,8 @@
     mapFrame: "map"
 
     # GPS Settings
-    useImuHeadingInitialization: true           # if using GPS data, set to "true"
-    useGpsElevation: true                       # if GPS elevation is bad, set to "false"
+    useImuHeadingInitialization: false           # if using GPS data, set to "true"
+    useGpsElevation: false                       # if GPS elevation is bad, set to "false"
     gpsDistThreshold: 0.25                       # Distance threshold [m] (between two gps measurements) deciding if the new GPS position should be included in the gtsam graph
     gpsCovThreshold: 1.0                        # If GPS noise is greater than this threshold, discard
     poseCovThreshold: 1.0                       # If Pose is further away from GPS than this threshold, correct
@@ -50,21 +51,26 @@
     extrinsicTrans: [0.0, 0.0, -0.246]
 
 
-    extrinsicRot: [  0.9945219,  0.1045285,  0.0000000,
-                    -0.1045285,  0.9945219,  0.0000000,
-                    0.0000000,  0.0000000,  1.0000000 ]
-    extrinsicRPY: [  0.9945219,  0.1045285,  0.0000000,
-                    -0.1045285,  0.9945219,  0.0000000,
-                    0.0000000,  0.0000000,  1.0000000 ]
+    # extrinsicRot: [  0.9945219,  0.1045285,  0.0000000,
+    #                 -0.1045285,  0.9945219,  0.0000000,
+    #                 0.0000000,  0.0000000,  1.0000000 ]
+    # extrinsicRPY: [  0.9945219,  0.1045285,  0.0000000,
+    #                 -0.1045285,  0.9945219,  0.0000000,
+    #                 0.0000000,  0.0000000,  1.0000000 ]
 
+    extrinsicRot: [  0.1045285,  0.9945219,  0.0000000,
+                    0.9945219, -0.1045285 ,  0.0000000,
+                    0.0000000,  0.0000000,  -1.0000000 ]
+    extrinsicRPY: [  0.1045285,  0.9945219,  0.0000000,
+                    0.9945219, -0.1045285 ,  0.0000000,
+                    0.0000000,  0.0000000,  -1.0000000 ]
 
-    # extrinsicRot: [1.0, 0.0, 0.0,
-    #                0.0, 1.0, 0.0,
-    #                0.0, 0.0, 1.0]
-    # extrinsicRPY: [1.0, 0.0, 0.0,
-    #                0.0, 1.0, 0.0,
-    #                0.0, 0.0, 1.0]
-                  
+    # extrinsicRot: [0.0, 1.0, 0.0,
+    #                1.0, 0.0, 0.0,
+    #                0.0, 0.0, -1.0]
+    # extrinsicRPY: [0.0, 1.0, 0.0,
+    #                1.0, 0.0, 0.0,
+    #                0.0, 0.0, -1.0]
 
 
 
