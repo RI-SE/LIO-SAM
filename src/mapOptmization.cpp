@@ -207,14 +207,12 @@ public:
             pcl::PointCloud<PointType>::Ptr globalSurfCloudDS(new pcl::PointCloud<PointType>());
             pcl::PointCloud<PointType>::Ptr globalMapCloud(new pcl::PointCloud<PointType>());
             pcl::PointCloud<PointType>::Ptr globalMapCloudAligned(new pcl::PointCloud<PointType>());
-            for (int i = 0; i < (int)cloudKeyPoses3D->size(); i++) 
-            {
+            for (int i = 0; i < (int)cloudKeyPoses3D->size(); i++) {
                 *globalCornerCloud += *transformPointCloud(cornerCloudKeyFrames[i],  &cloudKeyPoses6D->points[i]);
                 *globalSurfCloud   += *transformPointCloud(surfCloudKeyFrames[i],    &cloudKeyPoses6D->points[i]);
                 cout << "\r" << std::flush << "Processing feature cloud " << i << " of " << cloudKeyPoses6D->size() << " ...";
             }
-            if(req->resolution != 0)
-            {
+            if(req->resolution != 0) {
                cout << "\n\nSave resolution: " << req->resolution << endl;
                // down-sample and save corner cloud
                downSizeFilterCorner.setInputCloud(globalCornerCloud);
@@ -227,9 +225,8 @@ public:
                downSizeFilterSurf.filter(*globalSurfCloudDS);
                pcl::io::savePCDFileBinary(saveMapDirectory + "/SurfMap.pcd", *globalSurfCloudDS);
             }
-            else
-            {
-            // save corner cloud
+            else {
+                // save corner cloud
                pcl::io::savePCDFileBinary(saveMapDirectory + "/CornerMap.pcd", *globalCornerCloud);
                // save surf cloud
                pcl::io::savePCDFileBinary(saveMapDirectory + "/SurfMap.pcd", *globalSurfCloud);
@@ -249,8 +246,10 @@ public:
                 // Save UTM coordinate of origin
                 std::ofstream ofs(saveMapDirectory + "/GlobalMap.pcd" + ".utm", std::ofstream::out);
                 std::cout << "\nSaving UTM to " << saveMapDirectory + "/GlobalMap.pcd" + ".utm" << std::endl;
-                ofs << std::format("%.6f %.6f %.6f") % utmPoint.easting % utmPoint.northing % utmPoint.altitude << std::endl;
+                ofs << boost::format("%.6f %.6f %.6f") % utmPoint.easting % utmPoint.northing % utmPoint.altitude << std::endl;
                 ofs.close();   
+
+                // TODO: Transform cloud
             }
             
             // save global point cloud map
