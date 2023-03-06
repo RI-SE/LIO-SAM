@@ -249,7 +249,7 @@ public:
                 ofs << boost::format("%.6f %.6f %.6f") % utmPoint.easting % utmPoint.northing % utmPoint.altitude << std::endl;
                 ofs.close();   
 
-                // TODO: Transform cloud
+                // TODO: Transform cloud if heading is non-zero
             }
             
             // save global point cloud map

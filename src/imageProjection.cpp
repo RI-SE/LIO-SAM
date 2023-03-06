@@ -1,6 +1,8 @@
 #include "utility.hpp"
 #include "lio_sam/msg/cloud_info.hpp"
 
+// TODO: FIX RGB POINTS
+
 struct VelodynePointXYZIRT
 {
     PCL_ADD_POINT4D
@@ -12,6 +14,20 @@ struct VelodynePointXYZIRT
 POINT_CLOUD_REGISTER_POINT_STRUCT (VelodynePointXYZIRT,
     (float, x, x) (float, y, y) (float, z, z) (float, intensity, intensity)
     (uint16_t, ring, ring) (float, time, time)
+)
+
+struct VelodynePointXYZIRTRGB
+{
+    PCL_ADD_POINT4D
+    PCL_ADD_INTENSITY;
+    PCL_ADD_RGB;
+    std::uint16_t ring;
+    float time;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+} EIGEN_ALIGN16;
+POINT_CLOUD_REGISTER_POINT_STRUCT (VelodynePointXYZIRTRGB,
+    (float, x, x) (float, y, y) (float, z, z) (float, intensity, intensity)
+    (std::uint16_t, ring, ring) (float, time, time) (float, rgb, rgb)
 )
 
 struct OusterPointXYZIRT {
@@ -31,7 +47,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(OusterPointXYZIRT,
 )
 
 // Use the Velodyne point format as a common representation
-using PointXYZIRT = VelodynePointXYZIRT;
+using PointXYZIRT = VelodynePointXYZIRTRGB;
 
 const int queueLength = 2000;
 
