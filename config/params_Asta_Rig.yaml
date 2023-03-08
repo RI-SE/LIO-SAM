@@ -2,7 +2,7 @@
   ros__parameters:
 
     # Topics
-    pointCloudTopic: "/velodyne_points"          # Point cloud data
+    pointCloudTopic: "/CombinedCloud"          # Point cloud data
     imuTopic: "/ins/imu"         # IMU data
 
     odomTopic: "/ins/odometry_vehicle"                   # IMU pre-preintegration odometry, same frequency as IMU

@@ -1,6 +1,7 @@
 #pragma once
 #ifndef _UTILITY_LIDAR_ODOMETRY_H_
 #define _UTILITY_LIDAR_ODOMETRY_H_
+#define PCL_NO_PRECOMPILE
 
 #include <iostream>
 #include <rclcpp/rclcpp.hpp>
@@ -16,11 +17,9 @@
 #include <visualization_msgs/msg/marker.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 
+#include <pcl/kdtree/kdtree_flann.h>  // Flann be included before any opencv headers. Otherwise, there will be a compile error. 
 #include <opencv2/opencv.hpp>
 
-#include <pcl/kdtree/kdtree_flann.h>  // pcl include kdtree_flann throws error if PCL_NO_PRECOMPILE
-                                      // is defined before
-#define PCL_NO_PRECOMPILE
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/search/impl/search.hpp>
@@ -60,7 +59,23 @@
 
 using namespace std;
 
-typedef pcl::PointXYZI PointType;
+struct PointXYZIRTRGB {
+    PCL_ADD_POINT4D
+    PCL_ADD_INTENSITY;
+    PCL_ADD_RGB;
+    std::uint16_t ring;
+    float time;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+} EIGEN_ALIGN16;
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (PointXYZIRTRGB,
+    (float, x, x) (float, y, y) (float, z, z) (float, intensity, intensity)
+    (std::uint16_t, ring, ring) (float, time, time) (float, rgb, rgb)
+)
+
+// typedef pcl::PointXYZI PointType;
+typedef PointXYZIRTRGB PointType;
+
 
 enum class SensorType { VELODYNE, OUSTER, LIVOX };
 
@@ -352,8 +367,8 @@ public:
     }
 };
 
-
-sensor_msgs::msg::PointCloud2 publishCloud(rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr thisPub, pcl::PointCloud<PointType>::Ptr thisCloud, rclcpp::Time thisStamp, std::string thisFrame)
+template<typename T>
+sensor_msgs::msg::PointCloud2 publishCloud(rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr thisPub, const T& thisCloud, rclcpp::Time thisStamp, std::string thisFrame)
 {
     sensor_msgs::msg::PointCloud2 tempCloud;
     pcl::toROSMsg(*thisCloud, tempCloud);
@@ -402,14 +417,14 @@ void imuRPY2rosRPY(sensor_msgs::msg::Imu *thisImuMsg, T *rosRoll, T *rosPitch, T
     *rosYaw = imuYaw;
 }
 
-
-float pointDistance(PointType p)
+template<class T>
+float pointDistance(T p)
 {
     return sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
 }
 
-
-float pointDistance(PointType p1, PointType p2)
+template<class T>
+float pointDistance(T p1, T p2)
 {
     return sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y) + (p1.z-p2.z)*(p1.z-p2.z));
 }

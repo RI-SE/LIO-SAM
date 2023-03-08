@@ -48,6 +48,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(OusterPointXYZIRT,
 
 // Use the Velodyne point format as a common representation
 using PointXYZIRT = VelodynePointXYZIRTRGB;
+// using PointXYZIRT = PointType;
 
 const int queueLength = 2000;
 
@@ -87,8 +88,8 @@ private:
 
     pcl::PointCloud<PointXYZIRT>::Ptr laserCloudIn;
     pcl::PointCloud<OusterPointXYZIRT>::Ptr tmpOusterCloudIn;
-    pcl::PointCloud<PointType>::Ptr   fullCloud;
-    pcl::PointCloud<PointType>::Ptr   extractedCloud;
+    pcl::PointCloud<PointXYZIRT>::Ptr   fullCloud;
+    pcl::PointCloud<PointXYZIRT>::Ptr   extractedCloud;
 
     int deskewFlag;
     cv::Mat rangeMat;
@@ -152,8 +153,8 @@ public:
     {
         laserCloudIn.reset(new pcl::PointCloud<PointXYZIRT>());
         tmpOusterCloudIn.reset(new pcl::PointCloud<OusterPointXYZIRT>());
-        fullCloud.reset(new pcl::PointCloud<PointType>());
-        extractedCloud.reset(new pcl::PointCloud<PointType>());
+        fullCloud.reset(new pcl::PointCloud<PointXYZIRT>());
+        extractedCloud.reset(new pcl::PointCloud<PointXYZIRT>());
 
         fullCloud->points.resize(N_SCAN*Horizon_SCAN);
 
@@ -529,7 +530,7 @@ public:
         // *posZCur = ratio * odomIncreZ;
     }
 
-    PointType deskewPoint(PointType *point, double relTime)
+    PointXYZIRT deskewPoint(PointXYZIRT *point, double relTime)
     {
         if (deskewFlag == -1 || cloudInfo.imu_available == false)
             return *point;
@@ -552,11 +553,14 @@ public:
         Eigen::Affine3f transFinal = pcl::getTransformation(posXCur, posYCur, posZCur, rotXCur, rotYCur, rotZCur);
         Eigen::Affine3f transBt = transStartInverse * transFinal;
 
-        PointType newPoint;
+        PointXYZIRT newPoint;
         newPoint.x = transBt(0,0) * point->x + transBt(0,1) * point->y + transBt(0,2) * point->z + transBt(0,3);
         newPoint.y = transBt(1,0) * point->x + transBt(1,1) * point->y + transBt(1,2) * point->z + transBt(1,3);
         newPoint.z = transBt(2,0) * point->x + transBt(2,1) * point->y + transBt(2,2) * point->z + transBt(2,3);
         newPoint.intensity = point->intensity;
+        newPoint.rgb = point->rgb;
+        newPoint.ring = point->ring;
+        newPoint.time = point->time;
 
         return newPoint;
     }
@@ -567,11 +571,14 @@ public:
         // range image projection
         for (int i = 0; i < cloudSize; ++i)
         {
-            PointType thisPoint;
+            PointXYZIRT thisPoint;
             thisPoint.x = laserCloudIn->points[i].x;
             thisPoint.y = laserCloudIn->points[i].y;
             thisPoint.z = laserCloudIn->points[i].z;
             thisPoint.intensity = laserCloudIn->points[i].intensity;
+            thisPoint.time = laserCloudIn->points[i].time;
+            thisPoint.rgb = laserCloudIn->points[i].rgb;
+            thisPoint.ring = laserCloudIn->points[i].ring;
 
             float range = pointDistance(thisPoint);
             if (range < lidarMinRange || range > lidarMaxRange)
