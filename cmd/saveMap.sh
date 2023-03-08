@@ -8,10 +8,10 @@ read folderName
 
 echo "Saving maps to $HOME/"LIO-SAM_Maps/$folderName/" and converting to georeferenced las file" 
 
-ros2 service call /lio_sam/save_map "resolution: 0.0
+ros2 service call /lio_sam/save_map lio_sam/srv/SaveMap "resolution: 0.0
 destination: '/LIO-SAM_Maps/$folderName/'"
 
-python FillJson.py $HOME/"LIO-SAM_Maps/$folderName/GlobalMap.pcd"
+python3 FillJson.py $HOME/"LIO-SAM_Maps/$folderName/GlobalMap.pcd"
 
 echo "Converting to Las file.."
 

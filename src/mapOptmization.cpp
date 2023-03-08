@@ -13,8 +13,11 @@
 #include <gtsam/nonlinear/Marginals.h>
 #include <gtsam/nonlinear/Values.h>
 #include <gtsam/inference/Symbol.h>
-
 #include <gtsam/nonlinear/ISAM2.h>
+
+#include <oxts_msgs/msg/nav_sat_ref.hpp>
+#include <geodesy/utm.h>
+
 
 using namespace gtsam;
 
@@ -76,6 +79,7 @@ public:
     rclcpp::Subscription<lio_sam::msg::CloudInfo>::SharedPtr subCloud;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subGPS;
     rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr subLoop;
+    rclcpp::Subscription<oxts_msgs::msg::NavSatRef>::SharedPtr subNavSatRef;
 
     std::deque<nav_msgs::msg::Odometry> gpsQueue;
     lio_sam::msg::CloudInfo cloudInfo;
@@ -151,6 +155,9 @@ public:
 
     std::unique_ptr<tf2_ros::TransformBroadcaster> br;
 
+    oxts_msgs::msg::NavSatRef navSatRef;
+    bool navSatRefInit = false;
+
     mapOptimization(const rclcpp::NodeOptions & options) : ParamServer("lio_sam_mapOptimization", options)
     {
         ISAM2Params parameters;
@@ -175,6 +182,9 @@ public:
         subLoop = create_subscription<std_msgs::msg::Float64MultiArray>(
             "lio_loop/loop_closure_detection", qos,
             std::bind(&mapOptimization::loopInfoHandler, this, std::placeholders::_1));
+        subNavSatRef = create_subscription<oxts_msgs::msg::NavSatRef>(
+            "ins/nav_sat_ref", qos,
+            std::bind(&mapOptimization::navSatRefHandler, this, std::placeholders::_1));
 
         auto saveMapService = [this](const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<lio_sam::srv::SaveMap::Request> req, std::shared_ptr<lio_sam::srv::SaveMap::Response> res) -> void {
             (void)request_header;
@@ -196,14 +206,13 @@ public:
             pcl::PointCloud<PointType>::Ptr globalSurfCloud(new pcl::PointCloud<PointType>());
             pcl::PointCloud<PointType>::Ptr globalSurfCloudDS(new pcl::PointCloud<PointType>());
             pcl::PointCloud<PointType>::Ptr globalMapCloud(new pcl::PointCloud<PointType>());
-            for (int i = 0; i < (int)cloudKeyPoses3D->size(); i++) 
-            {
+            pcl::PointCloud<PointType>::Ptr globalMapCloudAligned(new pcl::PointCloud<PointType>());
+            for (int i = 0; i < (int)cloudKeyPoses3D->size(); i++) {
                 *globalCornerCloud += *transformPointCloud(cornerCloudKeyFrames[i],  &cloudKeyPoses6D->points[i]);
                 *globalSurfCloud   += *transformPointCloud(surfCloudKeyFrames[i],    &cloudKeyPoses6D->points[i]);
                 cout << "\r" << std::flush << "Processing feature cloud " << i << " of " << cloudKeyPoses6D->size() << " ...";
             }
-            if(req->resolution != 0)
-            {
+            if(req->resolution != 0) {
                cout << "\n\nSave resolution: " << req->resolution << endl;
                // down-sample and save corner cloud
                downSizeFilterCorner.setInputCloud(globalCornerCloud);
@@ -216,13 +225,33 @@ public:
                downSizeFilterSurf.filter(*globalSurfCloudDS);
                pcl::io::savePCDFileBinary(saveMapDirectory + "/SurfMap.pcd", *globalSurfCloudDS);
             }
-            else
-            {
-            // save corner cloud
+            else {
+                // save corner cloud
                pcl::io::savePCDFileBinary(saveMapDirectory + "/CornerMap.pcd", *globalCornerCloud);
                // save surf cloud
                pcl::io::savePCDFileBinary(saveMapDirectory + "/SurfMap.pcd", *globalSurfCloud);
             }
+            
+            if(navSatRefInit) {
+                if(navSatRef.heading != 0) {
+                    std::cerr << "Non-zero heading! " << navSatRef.heading << std::endl;
+                }
+                geographic_msgs::msg::GeoPoint geoPoint;
+                geoPoint.latitude = navSatRef.latitude;
+                geoPoint.longitude = navSatRef.longitude;
+                geoPoint.altitude = navSatRef.altitude;
+
+                geodesy::UTMPoint utmPoint(geoPoint); // convert to UTM
+
+                // Save UTM coordinate of origin
+                std::ofstream ofs(saveMapDirectory + "/GlobalMap.pcd" + ".utm", std::ofstream::out);
+                std::cout << "\nSaving UTM to " << saveMapDirectory + "/GlobalMap.pcd" + ".utm" << std::endl;
+                ofs << boost::format("%.6f %.6f %.6f") % utmPoint.easting % utmPoint.northing % utmPoint.altitude << std::endl;
+                ofs.close();   
+
+                // TODO: Transform cloud if heading is non-zero
+            }
+            
             // save global point cloud map
             *globalMapCloud += *globalCornerCloud;
             *globalMapCloud += *globalSurfCloud;
@@ -1784,6 +1813,16 @@ public:
             globalPath.header.stamp = timeLaserInfoStamp;
             globalPath.header.frame_id = odometryFrame;
             pubPath->publish(globalPath);
+        }
+    }
+
+    void navSatRefHandler(const oxts_msgs::msg::NavSatRef::SharedPtr navSatRefIn)
+    {
+        navSatRef = *navSatRefIn;
+        if (navSatRefInit == false)
+        {
+            navSatRefInit = true;
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "\033[1;32m----> Received NavSatRef.\033[0m");
         }
     }
 };

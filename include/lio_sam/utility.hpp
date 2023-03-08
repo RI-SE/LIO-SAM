@@ -95,7 +95,7 @@ public:
     string savePCDDirectory;
 
     // Lidar Sensor Configuration
-    SensorType sensor = SensorType::OUSTER;
+    SensorType sensor = SensorType::VELODYNE;
     int N_SCAN;
     int Horizon_SCAN;
     int downsampleRate;

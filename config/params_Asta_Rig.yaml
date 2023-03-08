@@ -5,9 +5,8 @@
     pointCloudTopic: "/velodyne_points"          # Point cloud data
     imuTopic: "/ins/imu"         # IMU data
 
-    odomTopic: "odometry/imu"                   # IMU pre-preintegration odometry, same frequency as IMU
-    # gpsTopic: "ins/odometry"                    # GPS odometry topic from navsat, see module_navsat.launch file
-    gpsTopic: "odometry/gpsz" 
+    odomTopic: "/ins/odometry_vehicle"                   # IMU pre-preintegration odometry, same frequency as IMU
+    gpsTopic: "/ins/odometry_vehicle"                    # GPS odometry topic from navsat, see module_navsat.launch file 
 
     useDownSampling: true                      # Set to false to disable all downsampling of scans
 
@@ -18,8 +17,8 @@
     mapFrame: "map"
 
     # GPS Settings
-    useImuHeadingInitialization: false           # if using GPS data, set to "true"
-    useGpsElevation: false                       # if GPS elevation is bad, set to "false"
+    useImuHeadingInitialization: true           # if using GPS data, set to "true"
+    useGpsElevation: true                       # if GPS elevation is bad, set to "false"
     gpsDistThreshold: 0.25                       # Distance threshold [m] (between two gps measurements) deciding if the new GPS position should be included in the gtsam graph
     gpsCovThreshold: 1.0                        # If GPS noise is greater than this threshold, discard
     poseCovThreshold: 1.0                       # If Pose is further away from GPS than this threshold, correct
@@ -33,8 +32,8 @@
     N_SCAN: 32                                  # number of lidar channel (i.e., 16, 32, 64, 128)
     Horizon_SCAN: 1800                          # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048)
     downsampleRate: 1                           # default: 1. Downsample your data if too many points. i.e., 16 = 64 / 4, 16 = 16 / 1
-    lidarMinRange: 2.2                          # default: 1.0, minimum lidar range to be used
-    lidarMaxRange: 40.0                         # default: 1000.0, maximum lidar range to be used
+    lidarMinRange: 2.5                          # default: 1.0, minimum lidar range to be used
+    lidarMaxRange: 100.0                         # default: 1000.0, maximum lidar range to be used
 
     # IMU Settings
     imuFrequency: 100
@@ -58,19 +57,19 @@
     #                 -0.1045285,  0.9945219,  0.0000000,
     #                 0.0000000,  0.0000000,  1.0000000 ]
 
-    extrinsicRot: [  0.1045285,  0.9945219,  0.0000000,
-                    0.9945219, -0.1045285 ,  0.0000000,
-                    0.0000000,  0.0000000,  -1.0000000 ]
-    extrinsicRPY: [  0.1045285,  0.9945219,  0.0000000,
-                    0.9945219, -0.1045285 ,  0.0000000,
-                    0.0000000,  0.0000000,  -1.0000000 ]
+    # extrinsicRot: [  0.1045285,  0.9945219,  0.0000000,
+    #                 0.9945219, -0.1045285 ,  0.0000000,
+    #                 0.0000000,  0.0000000,  -1.0000000 ]
+    # extrinsicRPY: [  0.1045285,  0.9945219,  0.0000000,
+    #                 0.9945219, -0.1045285 ,  0.0000000,
+    #                 0.0000000,  0.0000000,  -1.0000000 ]
 
-    # extrinsicRot: [0.0, 1.0, 0.0,
-    #                1.0, 0.0, 0.0,
-    #                0.0, 0.0, -1.0]
-    # extrinsicRPY: [0.0, 1.0, 0.0,
-    #                1.0, 0.0, 0.0,
-    #                0.0, 0.0, -1.0]
+    extrinsicRot: [0.0, 1.0, 0.0,
+                   1.0, 0.0, 0.0,
+                   0.0, 0.0, -1.0]
+    extrinsicRPY: [0.0, 1.0, 0.0,
+                   1.0, 0.0, 0.0,
+                   0.0, 0.0, -1.0]
 
 
 
@@ -113,69 +112,3 @@
     globalMapVisualizationPoseDensity: 5.0       # meters, global map visualization keyframe density
     globalMapVisualizationLeafSize: 0.4           # meters, global map visualization cloud density
 
-
-  # # Navsat (convert GPS coordinates to Cartesian)
-  # navsat:
-  #   frequency: 25
-  #   wait_for_datum: false
-  #   delay: 0.0
-  #   magnetic_declination_radians: 0.08
-  #   yaw_offset: 0
-  #   zero_altitude: false
-  #   broadcast_utm_transform: true
-  #   broadcast_utm_transform_as_parent_frame: false
-  #   publish_filtered_gps: true
-
-  # # EKF for Navsat
-  # ekf_gps:
-  #   publish_tf: false
-  #   map_frame: map
-  #   odom_frame: odom
-  #   base_link_frame: base_link
-  #   world_frame: odom
-
-  #   frequency: 25
-  #   two_d_mode: false
-  #   sensor_timeout: 0.04
-  #   # -------------------------------------
-  #   # External IMU:
-  #   # -------------------------------------
-  #   imu0: /ins/imu
-  #   #imu0: imu_correct
-  #   # make sure the input is aligned with ROS REP105. "imu_correct" is manually transformed by myself. EKF can also transform the data using tf between your imu and base_link
-  #   imu0_config: [false, false, false,
-  #                 true,  true,  true,
-  #                 false, false, false,
-  #                 true, true, true,
-  #                 true,  true,  true]           
-  #   imu0_differential: false
-  #   imu0_queue_size: 50 
-  #   imu0_remove_gravitational_acceleration: true
-  #   # -------------------------------------
-  #   # Odometry (From Navsat):
-  #   # -------------------------------------
-  #   odom0: /odometry/gps
-  #   odom0_config: [true,  true,  true,
-  #                 false, false, false,
-  #                 false, false, false,
-  #                 false, false, false,
-  #                 false, false, false]
-  #   odom0_differential: false
-  #   odom0_queue_size: 50
-
-  #   #                            x     y     z     r     p     y   x_dot  y_dot  z_dot  r_dot p_dot y_dot x_ddot y_ddot z_ddot
-  #   process_noise_covariance: [  0.05,  0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,    0,    0,      0,
-  #                               0,    0.05,  0,    0,    0,    0,    0,     0,     0,     0,    0,    0,    0,    0,      0,
-  #                               0,    0,    0.1,  0,    0,    0,    0,     0,     0,     0,    0,    0,    0,    0,      0,
-  #                               0,    0,    0,    0.03, 0,    0,    0,     0,     0,     0,    0,    0,    0,    0,      0,
-  #                               0,    0,    0,    0,    0.03, 0,    0,     0,     0,     0,    0,    0,    0,    0,      0,
-  #                               0,    0,    0,    0,    0,    0.1,  0,     0,     0,     0,    0,    0,    0,    0,      0,
-  #                               0,    0,    0,    0,    0,    0,    0.25,  0,     0,     0,    0,    0,    0,    0,      0,
-  #                               0,    0,    0,    0,    0,    0,    0,     0.25,  0,     0,    0,    0,    0,    0,      0,
-  #                               0,    0,    0,    0,    0,    0,    0,     0,     0.04,  0,    0,    0,    0,    0,      0,
-  #                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0.01, 0,    0,    0,    0,      0,
-  #                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0.01, 0,    0,    0,      0,
-  #                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0.01, 0,    0,      0,
-  #                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,    0.01, 0,      0,
-  #                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,    0,    0.01,   0,
-  #                               0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,    0,    0,      0.015]
