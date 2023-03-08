@@ -128,12 +128,8 @@ public:
             imuTopic, qos_imu,
             std::bind(&ImageProjection::imuHandler, this, std::placeholders::_1),
             imuOpt);
-        // subOdom = create_subscription<nav_msgs::msg::Odometry>(
-        //     odomTopic + "_incremental", qos_imu,
-        //     std::bind(&ImageProjection::odometryHandler, this, std::placeholders::_1),
-        //     odomOpt);
         subOdom = create_subscription<nav_msgs::msg::Odometry>(
-            "/ins/odometry_vehicle", qos_imu,
+            odomTopic, qos_imu,
             std::bind(&ImageProjection::odometryHandler, this, std::placeholders::_1),
             odomOpt);
         subLaserCloud = create_subscription<sensor_msgs::msg::PointCloud2>(
