@@ -1626,6 +1626,9 @@ public:
         thisPose6D.time = timeLaserInfoCur;
         cloudKeyPoses6D->push_back(thisPose6D);
 
+        // std::cout << "####### cloudKeyPose: \nx: " << thisPose6D.x << "\ny: " << thisPose6D.y << "\nz: " << thisPose6D.z 
+        //         << "\nroll: " << thisPose6D.roll << "\npitch: " << thisPose6D.pitch << "\nyaw: " << thisPose6D.yaw << "\n" << std::endl;
+
         // cout << "****************************************************" << endl;
         // cout << "Pose covariance:" << endl;
         // cout << isam->marginalCovariance(isamCurrentEstimate.size()-1) << endl << endl;

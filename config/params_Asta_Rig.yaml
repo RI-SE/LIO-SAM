@@ -2,7 +2,8 @@
   ros__parameters:
 
     # Topics
-    pointCloudTopic: "/CombinedCloud"          # Point cloud data
+    # pointCloudTopic: "/CombinedCloud"          # Point cloud data
+    pointCloudTopic: "/velodyne_points"          # Point cloud data
     imuTopic: "/ins/imu"         # IMU data
 
     odomTopic: "/ins/odometry_vehicle"                   # IMU pre-preintegration odometry, same frequency as IMU
@@ -19,12 +20,12 @@
     # GPS Settings
     useImuHeadingInitialization: true           # if using GPS data, set to "true"
     useGpsElevation: true                       # if GPS elevation is bad, set to "false"
-    gpsDistThreshold: 0.25                       # Distance threshold [m] (between two gps measurements) deciding if the new GPS position should be included in the gtsam graph
-    gpsCovThreshold: 1.0                        # If GPS noise is greater than this threshold, discard
+    gpsDistThreshold: 0.25                      # Distance threshold [m] (between two gps measurements) deciding if the new GPS position should be included in the gtsam graph
+    gpsCovThreshold: 2.0                        # If GPS noise is greater than this threshold, discard
     poseCovThreshold: 1.0                       # If Pose is further away from GPS than this threshold, correct
     
     # Export settings
-    savePCD: false                              # https://github.com/TixiaoShan/LIO-SAM/issues/3
+    savePCD: false                               
     savePCDDirectory: "/Downloads/LOAM/"        # in your home folder, starts and ends with "/". Warning: the code deletes "LOAM" folder then recreates it. See "mapOptimization" for implementation
 
     # Sensor Settings
@@ -64,13 +65,21 @@
     #                 0.9945219, -0.1045285 ,  0.0000000,
     #                 0.0000000,  0.0000000,  -1.0000000 ]
 
-    extrinsicRot: [0.0, 1.0, 0.0,
-                   1.0, 0.0, 0.0,
-                   0.0, 0.0, -1.0]
-    extrinsicRPY: [0.0, 1.0, 0.0,
-                   1.0, 0.0, 0.0,
-                   0.0, 0.0, -1.0]
+    # inMotion
+    # extrinsicRot: [0.0, 1.0, 0.0,
+    #                1.0, 0.0, 0.0,
+    #                0.0, 0.0, -1.0]
+    # extrinsicRPY: [0.0, 1.0, 0.0,
+    #                1.0, 0.0, 0.0,
+    #                0.0, 0.0, -1.0]
 
+    # xNAV650
+    extrinsicRot: [0.0, -1.0, 0.0,
+                   -1.0, 0.0, 0.0,
+                   0.0, 0.0, 1.0]
+    extrinsicRPY: [0.0, -1.0, 0.0,
+                   -1.0, 0.0, 0.0,
+                   0.0, 0.0, 1.0]
 
 
     # LOAM feature threshold
@@ -80,9 +89,9 @@
     surfFeatureMinValidNum: 300
 
     # voxel filter paprams
-    odometrySurfLeafSize: 0.4                     # default: 0.4 - outdoor, 0.2 - indoor
-    mappingCornerLeafSize: 0.2                    # default: 0.2 - outdoor, 0.1 - indoor
-    mappingSurfLeafSize: 0.4                      # default: 0.4 - outdoor, 0.2 - indoor
+    odometrySurfLeafSize: 0.2                     # default: 0.4 - outdoor, 0.2 - indoor
+    mappingCornerLeafSize: 0.1                    # default: 0.2 - outdoor, 0.1 - indoor
+    mappingSurfLeafSize: 0.2                      # default: 0.4 - outdoor, 0.2 - indoor
 
     # robot motion constraint (in case you are using a 2D robot)
     z_tollerance: 1000.0                            # meters
