@@ -17,7 +17,7 @@
 
   - [**System architecture**](#system-architecture)
 
-  - [**Package dependency**](#dependency)
+  - [**Package dependency**](#Dependencies)
 
   - [**Package install**](#install)
 
@@ -42,10 +42,6 @@
 <p align='center'>
     <img src="./config/doc/system.png" alt="drawing" width="800"/>
 </p>
-
-We design a system that maintains two graphs and runs up to 10x faster than real-time.
-  - The factor graph in "mapOptimization.cpp" optimizes lidar odometry factor and GPS factor. This factor graph is maintained consistently throughout the whole test.
-
 
 ## Dependencies
 
