@@ -256,12 +256,11 @@ public:
             // save global point cloud map
             *globalMapCloud += *globalCornerCloud;
             *globalMapCloud += *globalSurfCloud;
-            int ret = pcl::io::savePCDFileBinary(saveMapDirectory + "/GlobalMap.pcd", *globalMapCloud);
+            int ret = pcl::io::savePLYFileBinary(saveMapDirectory + "/GlobalMap.ply", *globalMapCloud);
+                ret = pcl::io::savePCDFileBinary(saveMapDirectory + "/GlobalMap.pcd", *globalMapCloud);
             res->success = ret == 0;
-            downSizeFilterCorner.setLeafSize(mappingCornerLeafSize, mappingCornerLeafSize, mappingCornerLeafSize);
-            downSizeFilterSurf.setLeafSize(mappingSurfLeafSize, mappingSurfLeafSize, mappingSurfLeafSize);
             cout << "****************************************************" << endl;
-            cout << "Saving map to pcd files completed\n" << endl;
+            cout << "Saving map to pcd and ply files completed\n" << endl;
             return;
         };
         
