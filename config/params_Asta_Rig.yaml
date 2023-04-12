@@ -18,7 +18,7 @@
     mapFrame: "map"
 
     # GPS Settings
-    useImuHeadingInitialization: true           # if using GPS data, set to "true"
+    useImuHeadingInitialization: false           # if using GPS data, set to "true"
     useGpsElevation: true                       # if GPS elevation is bad, set to "false"
     gpsDistThreshold: 0.25                      # Distance threshold [m] (between two gps measurements) deciding if the new GPS position should be included in the gtsam graph
     gpsCovThreshold: 2.0                        # If GPS noise is greater than this threshold, discard
@@ -75,10 +75,10 @@
 
     # xNAV650
     extrinsicRot: [0.0, -1.0, 0.0,
-                   -1.0, 0.0, 0.0,
+                  -1.0, 0.0, 0.0,
                    0.0, 0.0, 1.0]
     extrinsicRPY: [0.0, -1.0, 0.0,
-                   -1.0, 0.0, 0.0,
+                  -1.0, 0.0, 0.0,
                    0.0, 0.0, 1.0]
 
 
@@ -102,8 +102,8 @@
     mappingProcessInterval: 0.10                  # seconds, regulate mapping frequency
 
     # Surrounding map
-    surroundingkeyframeAddingDistThreshold: 1.0   # meters, regulate keyframe adding threshold
-    surroundingkeyframeAddingAngleThreshold: 0.2  # radians, regulate keyframe adding threshold
+    surroundingkeyframeAddingDistThreshold: 0.05 #1.0   # meters, regulate keyframe adding threshold
+    surroundingkeyframeAddingAngleThreshold: 0.1 #0.2  # radians, regulate keyframe adding threshold
     surroundingKeyframeDensity: 2.0               # meters, downsample surrounding keyframe poses   
     surroundingKeyframeSearchRadius: 35.0         # meters, within n meters scan-to-map optimization (when loop closure disabled)
 
