@@ -283,7 +283,7 @@ public:
         // check dense flag
         if (laserCloudIn->is_dense == false)
         {
-            RCLCPP_ERROR(get_logger(), "Point cloud is not in dense format, please remove NaN points first!");
+            RCLCPP_ERROR(get_logger(), "\033[1;31mPoint cloud is not in dense format, please remove NaN points first!\033[0m");
             rclcpp::shutdown();
         }
 
