@@ -18,11 +18,11 @@
     mapFrame: "map"
 
     # GPS Settings
-    useImuHeadingInitialization: false           # if using GPS data, set to "true"
+    useImuHeadingInitialization: true           # if using GPS data, set to "true"
     useGpsElevation: true                       # if GPS elevation is bad, set to "false"
-    gpsDistThreshold: 0.25                      # Distance threshold [m] (between two gps measurements) deciding if the new GPS position should be included in the gtsam graph
+    gpsDistThreshold: 0.05                      # Distance threshold [m] (between two gps measurements) deciding if the new GPS position should be included in the gtsam graph
     gpsCovThreshold: 2.0                        # If GPS noise is greater than this threshold, discard
-    poseCovThreshold: 1.0                       # If Pose is further away from GPS than this threshold, correct
+    poseCovThreshold: 0.02                       # If Pose is further away from GPS than this threshold, correct
     
     # Export settings
     savePCD: false                               
