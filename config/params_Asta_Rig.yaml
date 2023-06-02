@@ -6,8 +6,8 @@
     pointCloudTopic: "/velodyne_points"          # Point cloud data
     imuTopic: "/ins/imu"         # IMU data
 
-    odomTopic: "/ins/odometry_vehicle"                   # IMU pre-preintegration odometry, same frequency as IMU
-    gpsTopic: "/ins/odometry_vehicle"                    # GPS odometry topic from navsat, see module_navsat.launch file 
+    odomTopic: "/ins/odometry_lidar"                   # IMU pre-preintegration odometry, same frequency as IMU
+    gpsTopic: "/ins/odometry_lidar"                    # GPS odometry topic from navsat, see module_navsat.launch file 
 
     useDownSampling: true                      # Set to false to disable all downsampling of scans
 

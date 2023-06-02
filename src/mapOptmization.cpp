@@ -535,16 +535,6 @@ public:
     }
 
 
-
-
-
-
-
-
-
-
-
-
     void loopClosureThread()
     {
         if (loopClosureEnableFlag == false)
@@ -820,16 +810,6 @@ public:
         pubLoopConstraintEdge->publish(markerArray);
     }
 
-
-
-
-
-
-
-    
-
-
-
     void updateInitialGuess()
     {
         // save current transformation before any processing
@@ -839,9 +819,21 @@ public:
         // initialization
         if (cloudKeyPoses3D->points.empty())
         {
-            transformTobeMapped[0] = cloudInfo.imu_roll_init;
-            transformTobeMapped[1] = cloudInfo.imu_pitch_init;
-            transformTobeMapped[2] = cloudInfo.imu_yaw_init;
+            // We trust the OxTs to be accurate so move initial guess to OxTs position
+            if (cloudInfo.odom_available == true)
+            {   
+                transformTobeMapped[0] = cloudInfo.initial_guess_roll;
+                transformTobeMapped[1] = cloudInfo.initial_guess_pitch;
+                transformTobeMapped[2] = cloudInfo.initial_guess_yaw;
+                transformTobeMapped[3] = cloudInfo.initial_guess_x;
+                transformTobeMapped[4] = cloudInfo.initial_guess_y;
+                transformTobeMapped[5] = cloudInfo.initial_guess_z;
+            } else 
+            {
+                transformTobeMapped[0] = cloudInfo.imu_roll_init;
+                transformTobeMapped[1] = cloudInfo.imu_pitch_init;
+                transformTobeMapped[2] = cloudInfo.imu_yaw_init;
+            }
 
             if (!useImuHeadingInitialization)
                 transformTobeMapped[2] = 0;
